@@ -4,9 +4,223 @@
 <!DOCTYPE html>
 <html>
 <head>
-<input id="imagee" type="file" accept="image/*">
+ 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<link rel="stylesheet" href="styles.css">		
+	<link rel="stylesheet" href="jquery.Jcrop.min.css"/>
+	<link rel="stylesheet" href="https://unpkg.com/jcrop/dist/jcrop.css">
+	<!-- <link rel="stylesheet" href="sweetalert.css"> -->
+ <style type="text/css">
+ body {
+  font-family: 'Adobe Devanagari';
+  background-image:url('back1.jpg');
+  color: #836A19;
+ }
+ p {
+  text-align: center;
+  margin-right: 50%;
+  color: #614D0B;
+  font-size: 20px;
+   font-weight: bold;
+ }
+ li {
+  color: #836A19;
+  font-weight: bold;
+  font-size: 20px;
+ }
+ #convert {background-color: grey; /* Green */
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    cursor: pointer;
+      -webkit-transition-duration: 0.4s; /* Safari */
+      transition-duration: 0.4s;
+
+ }
+ 	 #crop1,#file-input {
+ 		background-color: grey; /* Green */
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    cursor: pointer;
+    	-webkit-transition-duration: 0.4s; /* Safari */
+    	transition-duration: 0.4s;
+
+	}
+ 	
+#crop1:hover {
+      background-color: #F79F1B; /* Green */
+  }
+#file-input:hover {
+      background-color: #F79F1B; /* Green */
+  }
+  h1 {
+    color: #614D0B;
+  }
+
+ </style>
+
+</head>		
 <body>
-<p id="hello"> sad</p>
-<script scr="script.js"></script>
+
+	<div id="el">
+		<a id='imageLink'> 
+			<input id="file-input" type="file" accept="image/*">
+		</a>
+		<ul>
+			<h1>Instructions</h1>
+			<li>Please Upload image or continue with example image</li>
+			<li>Crop the image to get Good Result</li>
+			<li>Go Down ....and After cropping Hit CROP Button FIRST</li>
+			<li> Then HIT Convert button</li>
+			<li>Wait...</li>
+		</ul>
+		
+		
+    </div>
+    <div class="images1">
+ <img src="" alt="Image" id="demo"  width="800" height="600"/>
+  <img id="preview" width="5" height="5"/>
+    
+    <div class="images">
+  <img src="screen.png" alt="Image" id="demo1" width="800" height="600" />
+  <img id="preview1" width="5" height="5" />
+   
+</div>
+	
+	<h1 style="color: #F0C27D"> Result </h1>
+	<h1 id="result" style="color: #F0C27D"> 0%</h1> 
+		<p id="resultText"> Converted Text Will be here</p>
+		<button id="convert">Convert</button>
+		<button id="crop1">Crop</button>
+		
+
+		
+ <img id="prev" />
+
+	 
+	<script type="text/javascript" src='https://cdn.rawgit.com/naptha/tesseract.js/1.0.10/dist/tesseract.js'></script>	
+	<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="evroneCrop.js"></script>
+
+
+		<script type="text/javascript" charset="utf-8">
+
+document.getElementById('demo').style.display ="none";
+ 
+document.getElementById('convert').disabled= true;
+
+t = false; var q='1';
+const fileInput = document.getElementById('file-input');
+var s ="screen.png";
+var x;
+$( function() {
+ 	t = false;
+    crop = $('#demo1').evroneCrop({
+          preview: '#preview1',
+          setSelect: 'center',
+
+        });
+           
+      });
+      
+  
+     
+ 
+	//eventlistener for when image uploaded
+ 	fileInput.addEventListener('change', (e) => doSomethingWithFiles(e.target.files));
+ 	
+
+
+  function doSomethingWithFiles(fileList) { 
+    let file = null;
+
+    for (let i = 0; i < fileList.length; i++) {
+      if (fileList[i].type.match(/^image\//)) {
+        file = fileList[i];
+        break;
+      }
+    }
+
+   if (file !== null) {
+     s = URL.createObjectURL(file);
+     	
+    }
+    t = true; q = '';
+      document.getElementById('demo1').style.display ="none";
+      document.getElementById('demo').style.display ="block";
+ 	var el = document.querySelector('.images');
+el.remove();
+    
+      document.getElementById('demo').src =s;
+
+
+
+
+  }
+
+ $( function() { console.log("hello"); 	
+      $('#demo').bind('load', function(e) {
+     $('#demo').evroneCrop({
+          preview: '#preview',
+          setSelect: 'center',
+
+        });
+           
+      });
+      
+  
+    }); 
+
+
+
+
+
+ 
+ $('#crop1').click(function() {
+      document.getElementById('convert').disabled= false;
+      document.getElementById('convert').style='background-color: #F79F1B;';
+
+      x = document.querySelector('#preview'+q).src;
+
+ //console.log(document.querySelector('#preview1').src);
+      document.querySelector('#prev').src =x;
+
+  });
+
+
+$('#convert').click(function() {
+	
+	   Tesseract.recognize(x).progress(function  (p) { 
+
+         if (p.status=="recognizing text") {  $('#result').text(Math.round(p.progress*100) + "%");  }  //console.log('progress', p);
+    })
+          .then(function (result) { //console.log('result', result)
+           $('#resultText').text(result.text); 
+        })
+
+
+
+});
+
+
+
+
+
+
+		</script>
 </body>
 </html>
